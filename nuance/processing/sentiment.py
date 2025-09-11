@@ -1,11 +1,9 @@
 from pydantic import BaseModel
-from typing import Optional, Dict, Any
 import traceback
 
 import nuance.models as models 
-import nuance.constants as cst
 from nuance.processing.base import Processor, ProcessingResult, ProcessingStatus
-from nuance.processing.llm import query_llm
+from nuance.processing.llm import query_llm, strip_thinking
 from nuance.utils.logging import logger
 
 
@@ -51,7 +49,7 @@ class SentimentAnalyzer(Processor[InteractionPostContext, models.Interaction]):
             )
             
             # Call LLM to analyze sentiment
-            llm_response = await query_llm(prompt=prompt_tone, temperature=0.0)
+            llm_response = strip_thinking(await query_llm(prompt=prompt_tone, temperature=0.0))
             sentiment = llm_response.strip().lower()
             
             is_negative_response = sentiment == "negative"

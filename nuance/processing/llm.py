@@ -1,6 +1,6 @@
 # nuance/processing/llm.py
 import asyncio
-import time
+import re
 from typing import ClassVar, Optional
 
 import aiohttp
@@ -35,7 +35,7 @@ class LLMService:
 
     async def _initialize(self, model_name: Optional[str] = None):
         """Initialize the LLM service."""
-        self.model_name = model_name or "Qwen/Qwen2.5-7B-Instruct"
+        self.model_name = model_name or "Qwen/Qwen3-8B"
         logger.info(f"LLM Service initialized with model: {self.model_name}")
 
     async def query(
@@ -83,25 +83,10 @@ class LLMService:
         """
         Call the LLM API.
         """
-        url = "https://api.nineteen.ai/v1/chat/completions"
+        url = "https://llm.chutes.ai/v1/chat/completions"
         
-        # if settings.NINETEEN_API_KEY:
-        #     print(f"Using provided API key: {settings.NINETEEN_API_KEY}")
-        #     # Use provided API key if provided
-        #     headers = {
-        #         "Authorization": f"Bearer {settings.NINETEEN_API_KEY}",
-        #         "Content-Type": "application/json",
-        #     }
-        # else:
-
-        # Use authorization by validator's signature
-        nonce = str(time.time_ns())
-        signature = f"0x{keypair.sign(nonce).hex()}"
         headers = {
-            "validator-hotkey": keypair.ss58_address,
-            "signature": signature,
-            "nonce": nonce,
-            "netuid": "23",
+            "Authorization": f"Bearer {settings.CHUTES_API_KEY}",
             "Content-Type": "application/json",
         }
 
@@ -135,7 +120,7 @@ async def query_llm(
     keypair=None  # Optional keypair parameter
 ) -> str:
     # Get wallet if not provided
-    if not keypair and not settings.NINETEEN_API_KEY:
+    if not keypair:
         keypair = (await get_wallet()).hotkey
     
     service = await LLMService.get_instance()
@@ -147,6 +132,13 @@ async def query_llm(
         top_p=top_p,
         keypair=keypair
     )
+
+
+def strip_thinking(text: str) -> str:
+    """
+    Removes <think>...</think> sections from model output.
+    """
+    return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
     
 if __name__ == "__main__":
     print(asyncio.run(query_llm("Hello, world!")))

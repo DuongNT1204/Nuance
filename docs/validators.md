@@ -133,7 +133,7 @@ To set up a validator node on the Nuance Subnet, follow these steps:
 
     # API Keys
     DATURA_API_KEY=your_datura_api_key_here
-    NINETEEN_API_KEY=your_19_api_key        # Optional
+    CHUTES_API_KEY=your_chutes_api_key  # Get an API key for chutes at https://chutes.ai/
 
     # Database configuration
     DATABASE_URL=sqlite+aiosqlite:///./nuance.db

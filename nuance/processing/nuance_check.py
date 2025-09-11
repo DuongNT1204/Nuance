@@ -1,16 +1,7 @@
-import asyncio
-import time
-from typing import Any, ClassVar, Dict
-import traceback
-
-import aiohttp
-
-import nuance.constants as cst
 import nuance.models as models
 from nuance.utils.logging import logger
-from nuance.utils.networking import async_http_request_with_retry
 from nuance.processing.base import Processor, ProcessingResult
-from nuance.processing.llm import query_llm
+from nuance.processing.llm import query_llm, strip_thinking
 from nuance.constitution import constitution_store
 
 
@@ -40,7 +31,7 @@ class NuanceChecker(Processor):
             prompt_nuance = nuance_prompt.format(tweet_text=content)
             
             # Call LLM to evaluate nuance
-            llm_response = await query_llm(prompt=prompt_nuance, temperature=0.0)
+            llm_response = strip_thinking(await query_llm(prompt=prompt_nuance, temperature=0.0))
             
             # Check if the post is approved as nuanced
             is_nuanced = llm_response.strip().lower() == "approve"
