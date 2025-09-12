@@ -23,6 +23,16 @@ Validators now require a publicly accessible submission server for receiving dir
 - **Open Port**: Default 10000 (configurable)
 - **Firewall Rules**: Allow inbound TCP connections on your submission server port
 
+## API Requirements
+
+To participate as a validator, you will need access to two external APIs:
+- **Datura API Key**  
+  Required for scoring and validation tasks. Validators can request an API key directly from the subnet developers (Nuance team). Please contact us if you need one.
+- **Chutes API Key**  
+  Required for model inference services after the sunset of Subnet 19. Validators must register for an API key at [https://chutes.ai/](https://chutes.ai/).
+
+You will configure both keys later in your `.env` file.
+
 ## Setup Instructions
 To set up a validator node on the Nuance Subnet, follow these steps:
 
