@@ -39,7 +39,7 @@ class Settings(BaseSettings):
 
     # API Keys and Secrets
     DATURA_API_KEY: str = Field(description="Datura API key.")
-    NINETEEN_API_KEY: str = Field(default="", description="Nineteen API key.")
+    CHUTES_API_KEY: str = Field(description="Chutes API key.")
     
     # Database settings
     DATABASE_URL: str = Field(

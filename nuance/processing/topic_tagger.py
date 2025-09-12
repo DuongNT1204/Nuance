@@ -2,7 +2,7 @@ import nuance.constants as cst
 import nuance.models as models
 from nuance.utils.logging import logger
 from nuance.processing.base import Processor, ProcessingResult
-from nuance.processing.llm import query_llm
+from nuance.processing.llm import query_llm, strip_thinking
 from nuance.constitution import constitution_store
 
 
@@ -39,7 +39,7 @@ class TopicTagger(Processor):
                 prompt_about = topic_ptompt.format(tweet_text=content)
                 
                 # Call LLM to evaluate topic relevance
-                llm_response = await query_llm(prompt=prompt_about, temperature=0.0)
+                llm_response = strip_thinking(await query_llm(prompt=prompt_about, temperature=0.0))
                 
                 # Check if the post is related to this topic
                 is_relevant = llm_response.strip().lower() == "true"

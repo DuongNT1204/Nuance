@@ -4,10 +4,11 @@ from typing import Callable, Awaitable
 
 from nuance.database.engine import get_db_session
 from nuance.database import PostRepository, InteractionRepository, SocialAccountRepository, NodeRepository
-from nuance.processing.nuance_check import NuanceChecker
 from nuance.constitution import constitution_store
 
-from nuance.processing.llm import query_llm
+from nuance.processing.llm import query_llm, strip_thinking
+
+
 # Dependency for database repositories
 def get_post_repo():
     return PostRepository(session_factory=get_db_session)
@@ -33,7 +34,7 @@ def get_nuance_checker() -> Callable[[str], Awaitable[bool]]:
         prompt_nuance = nuance_prompt.format(tweet_text=content)
         
         # Call LLM to evaluate nuance
-        llm_response = await query_llm(prompt=prompt_nuance, temperature=0.0)
+        llm_response = strip_thinking(await query_llm(prompt=prompt_nuance, temperature=0.0))
         
         # Check if the post is approved as nuanced
         is_nuanced = llm_response.strip().lower() == "approve"
@@ -58,7 +59,7 @@ def get_topic_checker() -> Callable[[str, str], Awaitable[bool]]:
             prompt_topic = topic_prompt.format(tweet_text=content)
             
             # Call LLM to evaluate nuance
-            llm_response = await query_llm(prompt=prompt_topic, temperature=0.0)
+            llm_response = strip_thinking(await query_llm(prompt=prompt_topic, temperature=0.0))
             
             # Check if the post is approved as nuanced
             is_this_topic = llm_response.strip().lower() == "true"
